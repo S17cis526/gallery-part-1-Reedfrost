@@ -22,7 +22,7 @@ function imageNamesToTags(fileNames) {
 }
 
 function serveImage(fileName, req, res) {
-	fs.readFile('images/' + fileName, function(err, data){
+	fs.readFile('images/' + fileName, function(err, body){
 		if(err) {
 			console.error(err);
 			res.statusCode = 404;
@@ -31,17 +31,17 @@ function serveImage(fileName, req, res) {
 			return;
 		}
 		res.setHeader('Content-Type','image/jpeg');
-		res.end("");
+		res.end(body);
 	});
 }
 
 function uploadImage(req, res) {
-	var body;
+	var body = '';
 	req.on('error', function(){
 		res.statusCode = 500;
 		res.end();
 	});
-	req.on('data',function(){
+	req.on('data',function(data){
 		body += data;
 	});
 	req.on('end', function(){
@@ -115,13 +115,12 @@ var server = http.createServer(function (req, res) {
 	case '/':
 	case "/gallery":
 	case "/Gallery":
-	if(req.method == 'GET') {
-		serveGallery(req, res);
-	} else if(req.method == 'POST') {
-		uploadPicture(req, res);
-	}
-		serveGallery(req, res);
-		break;
+		if(req.method == 'GET') {
+			serveGallery(req, res);
+		} else if(req.method == 'POST') {
+			uploadPicture(req, res);
+		}
+	break;
 	case "/gallery.css":
 	case "/gallery.css/":
 		res.setHeader('Content-Type', 'text/css');
